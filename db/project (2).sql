@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Aug 09, 2023 at 10:50 AM
--- Server version: 10.4.14-MariaDB
--- PHP Version: 7.2.33
+-- Host: 127.0.0.1
+-- Generation Time: Sep 24, 2023 at 03:36 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `project-room`
+-- Database: `project`
 --
 
 -- --------------------------------------------------------
@@ -40,35 +40,19 @@ CREATE TABLE `bill` (
   `paybill` date DEFAULT NULL,
   `month_bill` text DEFAULT NULL,
   `year_bill` text DEFAULT NULL,
-  `status` text NOT NULL DEFAULT 'รอชำระเงิน'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `status` text NOT NULL DEFAULT 'รอชำระเงิน',
+  `filename` varchar(255) DEFAULT 'noimg.jpeg',
+  `dateStart` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bill`
 --
 
-INSERT INTO `bill` (`id`, `id_room`, `unitwater`, `unitelec`, `price_w`, `price_e`, `priceroom`, `pricetotal`, `datebill`, `paybill`, `month_bill`, `year_bill`, `status`) VALUES
-(11, 101, 200, 200, 1000, 1000, 1800, 3800, '2023-08-09 15:44:20', NULL, '8', '2023', 'รอชำระเงิน');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `floor`
---
-
-CREATE TABLE `floor` (
-  `id` int(10) NOT NULL,
-  `floor` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `floor`
---
-
-INSERT INTO `floor` (`id`, `floor`) VALUES
-(1, 'ชั้นที่ 1'),
-(2, 'ชั้นที่ 2'),
-(3, 'ชั้นที่ 3');
+INSERT INTO `bill` (`id`, `id_room`, `unitwater`, `unitelec`, `price_w`, `price_e`, `priceroom`, `pricetotal`, `datebill`, `paybill`, `month_bill`, `year_bill`, `status`, `filename`, `dateStart`) VALUES
+(54, 102, 133, 133, 51, 117, 111, 429, '2023-09-17 20:03:13', '2023-09-17', '9', '2023', 'ชำระเงินแล้ว', 'Screenshot 2566-09-07 at 14.15.13.png', '2023-09-18'),
+(58, 202, 10, 15, 170, 135, 111, 566, '2023-09-18 19:13:48', NULL, '9', '2023', 'รอชำระเงิน', 'noimg.jpeg', '2023-09-18'),
+(59, 102, 140, 140, 102, 54, 90, 396, '2023-09-22 09:46:35', NULL, '9', '2023', 'รอชำระเงิน', 'noimg.jpeg', '2023-09-22');
 
 -- --------------------------------------------------------
 
@@ -85,7 +69,7 @@ CREATE TABLE `member` (
   `username` varchar(10) NOT NULL,
   `password` varchar(128) NOT NULL,
   `status` varchar(1) NOT NULL COMMENT 'U=user,A=admin'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `member`
@@ -93,7 +77,7 @@ CREATE TABLE `member` (
 
 INSERT INTO `member` (`id`, `id_room`, `name`, `lastname`, `tel`, `username`, `password`, `status`) VALUES
 (1, 1, 'เจ้าของ', 'CM', '0892120655', 'admin', 'admin', 'A'),
-(28, 101, 'บัวตอง', 'สองดาว', '0897277777', 'user', '1234', 'U');
+(39, 102, 'อัยลดา', 'เฉลยสุข', '0917947755', 'user', '123', 'U');
 
 -- --------------------------------------------------------
 
@@ -107,7 +91,14 @@ CREATE TABLE `out_room` (
   `date_out` date NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `detail` varchar(1000) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `out_room`
+--
+
+INSERT INTO `out_room` (`id`, `id_room`, `date_out`, `create_date`, `detail`) VALUES
+(39, 202, '2023-09-21', '2023-09-21 07:12:16', '-');
 
 -- --------------------------------------------------------
 
@@ -119,18 +110,19 @@ CREATE TABLE `rate` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `price` double NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rate`
 --
 
 INSERT INTO `rate` (`id`, `name`, `price`) VALUES
-(1, 'ค่าเช่า', 2000),
+(1, 'ค่าห้องพัก', 2000),
 (2, 'ค่าน้ำ', 17),
 (3, 'ค่าไฟ', 9),
 (4, 'ค่าส่วนกลาง(ค่าขยะ/ค่าทำความสะอาดทางเดิน)', 50),
-(5, 'ค่ามัดจำ', 2000);
+(5, 'ค่ามัดจำ', 2000),
+(6, 'ที่จอดรถ', 0);
 
 -- --------------------------------------------------------
 
@@ -145,16 +137,16 @@ CREATE TABLE `repair` (
   `detail` varchar(50) NOT NULL,
   `date_crash` datetime NOT NULL DEFAULT current_timestamp(),
   `status` varchar(1000) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `repair`
 --
 
 INSERT INTO `repair` (`id`, `id_room`, `crash`, `detail`, `date_crash`, `status`) VALUES
-(10, 102, 'ไฟกลางห้องไม่ติด', 'ไฟไม่ติดหลายวันแล้ว', '2023-08-01 15:33:03', 'แจ้งซ่อม'),
-(11, 101, 'น้ำรั่ว', 'น้ำในอ่างล้างหน้าไหลตลอดเวลา', '2023-08-01 15:35:02', 'เรียบร้อยแล้ว'),
-(18, 101, 'ทดสอบ', '-', '2023-08-08 23:13:02', 'แจ้งซ่อม');
+(10, 102, 'ไฟกลางห้องไม่ติด', 'ไฟไม่ติดหลายวันแล้ว', '2023-08-01 15:33:03', 'กำลังดำเนินการซ่อม'),
+(23, 101, 'ท่อในห้องน้ำตัน', '-', '2023-09-17 20:36:08', 'กำลังดำเนินการซ่อม'),
+(25, 102, 'ประตูพัง', 'แมวใช้เล็บฝน', '2023-09-17 20:39:47', 'แจ้งซ่อม');
 
 -- --------------------------------------------------------
 
@@ -171,69 +163,69 @@ CREATE TABLE `room` (
   `status` int(11) NOT NULL,
   `water_no` int(11) NOT NULL DEFAULT 0,
   `electric_no` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `room`
 --
 
 INSERT INTO `room` (`id_room`, `floor`, `water`, `elec`, `crash`, `status`, `water_no`, `electric_no`) VALUES
-(101, 1, 10, 10, '1800', 1, 200, 200),
-(102, 1, 10, 10, '2000', 0, 0, 0),
-(103, 1, 10, 10, '2000', 0, 0, 0),
-(104, 1, 10, 10, '2000', 0, 0, 0),
-(105, 1, 10, 10, '2000', 0, 0, 0),
-(106, 1, 10, 10, '2000', 0, 0, 0),
-(107, 1, 10, 10, '2000', 0, 0, 0),
-(108, 1, 10, 10, '2000', 0, 0, 0),
-(109, 1, 10, 10, '2000', 0, 0, 0),
-(110, 1, 10, 10, '2000', 0, 0, 0),
-(111, 1, 10, 10, '2000', 0, 0, 0),
-(112, 1, 10, 10, '2000', 0, 0, 0),
-(113, 1, 10, 10, '2000', 0, 0, 0),
-(114, 1, 10, 10, '2000', 0, 0, 0),
-(115, 1, 10, 10, '2000', 0, 0, 0),
-(116, 1, 10, 10, '2000', 0, 0, 0),
-(117, 1, 10, 10, '2000', 0, 0, 0),
-(118, 1, 10, 10, '2000', 0, 0, 0),
-(201, 2, 10, 10, '2000', 0, 0, 0),
-(202, 2, 10, 10, '2000', 0, 0, 0),
-(203, 2, 10, 10, '2000', 0, 0, 0),
-(204, 2, 10, 10, '2000', 0, 0, 0),
-(205, 2, 10, 10, '2000', 0, 0, 0),
-(206, 2, 10, 10, '2000', 0, 0, 0),
-(207, 2, 10, 10, '2000', 0, 0, 0),
-(208, 2, 10, 10, '2000', 0, 0, 0),
-(209, 2, 10, 10, '2000', 0, 0, 0),
-(210, 2, 10, 10, '2000', 0, 0, 0),
-(211, 2, 10, 10, '2000', 0, 0, 0),
-(212, 2, 10, 10, '2000', 0, 0, 0),
-(213, 2, 10, 10, '2000', 0, 0, 0),
-(214, 2, 10, 10, '2000', 0, 0, 0),
-(215, 2, 10, 10, '2000', 0, 0, 0),
-(216, 2, 10, 10, '2000', 0, 0, 0),
-(217, 2, 10, 10, '2000', 0, 0, 0),
-(218, 2, 10, 10, '2000', 0, 0, 0),
-(219, 2, 10, 10, '2000', 0, 0, 0),
-(301, 3, 10, 10, '2000', 0, 0, 0),
-(302, 3, 10, 10, '2000', 0, 0, 0),
-(303, 3, 10, 10, '2000', 0, 0, 0),
-(304, 3, 10, 10, '2000', 0, 0, 0),
-(305, 3, 10, 10, '2000', 0, 0, 0),
-(306, 3, 10, 10, '2000', 0, 0, 0),
-(307, 3, 10, 10, '2000', 0, 0, 0),
-(308, 3, 10, 10, '2000', 0, 0, 0),
-(309, 3, 10, 10, '2000', 0, 0, 0),
-(310, 3, 10, 10, '2000', 0, 0, 0),
-(311, 3, 10, 10, '2000', 0, 0, 0),
-(312, 3, 10, 10, '2000', 0, 0, 0),
-(313, 3, 10, 10, '2000', 0, 0, 0),
-(314, 3, 10, 10, '2000', 0, 0, 0),
-(315, 3, 10, 10, '2000', 0, 0, 0),
-(316, 3, 10, 10, '2000', 0, 0, 0),
-(317, 3, 10, 10, '2000', 0, 0, 0),
-(318, 3, 10, 10, '2000', 0, 0, 0),
-(319, 3, 10, 10, '2000', 0, 0, 0);
+(101, 1, 17, 9, '2000', 0, 444, 444),
+(102, 1, 17, 9, '2000', 1, 140, 140),
+(103, 1, 17, 9, '2000', 0, 0, 0),
+(104, 1, 17, 9, '2000', 0, 0, 0),
+(105, 1, 17, 9, '2000', 0, 0, 0),
+(106, 1, 17, 9, '2000', 0, 0, 0),
+(107, 1, 17, 9, '2000', 0, 0, 0),
+(108, 1, 17, 9, '2000', 0, 51, 51),
+(109, 1, 17, 9, '2000', 0, 0, 0),
+(110, 1, 17, 9, '2000', 0, 0, 0),
+(111, 1, 17, 9, '2000', 0, 0, 0),
+(112, 1, 17, 9, '2000', 0, 0, 0),
+(113, 1, 17, 9, '2000', 0, 0, 0),
+(114, 1, 17, 9, '2000', 0, 0, 0),
+(115, 1, 17, 9, '2000', 0, 0, 0),
+(116, 1, 17, 9, '2000', 0, 0, 0),
+(117, 1, 17, 9, '2000', 0, 0, 0),
+(118, 1, 17, 9, '2000', 0, 0, 0),
+(201, 2, 17, 9, '2000', 0, 0, 0),
+(202, 2, 17, 9, '2000', 1, 10, 15),
+(203, 2, 17, 9, '2000', 0, 0, 0),
+(204, 2, 17, 9, '2000', 0, 0, 0),
+(205, 2, 17, 9, '2000', 0, 0, 0),
+(206, 2, 17, 9, '2000', 0, 0, 0),
+(207, 2, 17, 9, '2000', 0, 0, 0),
+(208, 2, 17, 9, '2000', 0, 0, 0),
+(209, 2, 17, 9, '2000', 0, 0, 0),
+(210, 2, 17, 9, '2000', 0, 0, 0),
+(211, 2, 17, 9, '2000', 0, 0, 0),
+(212, 2, 17, 9, '2000', 0, 0, 0),
+(213, 2, 17, 9, '2000', 0, 0, 0),
+(214, 2, 17, 9, '2000', 0, 0, 0),
+(215, 2, 17, 9, '2000', 0, 0, 0),
+(216, 2, 17, 9, '2000', 0, 0, 0),
+(217, 2, 17, 9, '2000', 0, 0, 0),
+(218, 2, 17, 9, '2000', 0, 0, 0),
+(219, 2, 17, 9, '2000', 0, 0, 0),
+(301, 3, 17, 9, '2000', 0, 0, 0),
+(302, 3, 17, 9, '2000', 0, 0, 0),
+(303, 3, 17, 9, '2000', 0, 0, 0),
+(304, 3, 17, 9, '2000', 0, 0, 0),
+(305, 3, 17, 9, '2000', 0, 0, 0),
+(306, 3, 17, 9, '2000', 0, 0, 0),
+(307, 3, 17, 9, '2000', 0, 0, 0),
+(308, 3, 17, 9, '2000', 0, 0, 0),
+(309, 3, 17, 9, '2000', 0, 0, 0),
+(310, 3, 17, 9, '2000', 0, 0, 0),
+(311, 3, 17, 9, '2000', 0, 0, 0),
+(312, 3, 17, 9, '2000', 0, 0, 0),
+(313, 3, 17, 9, '2000', 0, 0, 0),
+(314, 3, 17, 9, '2000', 0, 0, 0),
+(315, 3, 17, 9, '2000', 0, 0, 0),
+(316, 3, 17, 9, '2000', 0, 0, 0),
+(317, 3, 17, 9, '2000', 0, 0, 0),
+(318, 3, 17, 9, '2000', 0, 0, 0),
+(319, 3, 17, 9, '2000', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -254,14 +246,15 @@ CREATE TABLE `tenent` (
   `pic_rent` varchar(500) DEFAULT NULL COMMENT 'รูปสัญญาเช่า',
   `id_room` int(11) DEFAULT NULL COMMENT 'หมายเลขห้อง',
   `date_in` date DEFAULT NULL COMMENT 'วันที่เข้า'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tenent`
 --
 
 INSERT INTO `tenent` (`id`, `name`, `lastname`, `id_card`, `age`, `cunty`, `address`, `tel`, `pic_idcard`, `pic_rent`, `id_room`, `date_in`) VALUES
-(6, 'บัวตอง', 'สองดาว', '1100501131313', 50, 'ไทย', 'ไทย', '0897277777', NULL, NULL, 101, '2023-08-09');
+(21, 'อัยลดา', 'เฉลยสุข', '1111111111111', 26, 'ไทย', '666', '0917947755', NULL, NULL, 102, '2023-09-17'),
+(22, 'เเมรี่', 'โพซ่า', '1111111111111', 30, 'ไทย', '30', '0917947755', NULL, NULL, 202, '2023-09-18');
 
 --
 -- Indexes for dumped tables
@@ -271,12 +264,6 @@ INSERT INTO `tenent` (`id`, `name`, `lastname`, `id_card`, `age`, `cunty`, `addr
 -- Indexes for table `bill`
 --
 ALTER TABLE `bill`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `floor`
---
-ALTER TABLE `floor`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -323,31 +310,31 @@ ALTER TABLE `tenent`
 -- AUTO_INCREMENT for table `bill`
 --
 ALTER TABLE `bill`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-  MODIFY `id` int(6) NOT NULL AUTO_INCREMENT COMMENT 'รหัสสมาชิก', AUTO_INCREMENT=29;
+  MODIFY `id` int(6) NOT NULL AUTO_INCREMENT COMMENT 'รหัสสมาชิก', AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `out_room`
 --
 ALTER TABLE `out_room`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `repair`
 --
 ALTER TABLE `repair`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `tenent`
 --
 ALTER TABLE `tenent`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ลำดับผู้เช่า', AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ลำดับผู้เช่า', AUTO_INCREMENT=23;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
